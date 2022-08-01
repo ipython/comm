@@ -26,21 +26,25 @@ class BaseComm(LoggingConfigurable):
 
     comm_id = Unicode()
 
-    @default('comm_id')
+    @default("comm_id")
     def _default_comm_id(self):
         return uuid.uuid4().hex
 
     primary = Bool(True, help="Am I the primary or secondary Comm?")
 
-    target_name = Unicode('comm')
-    target_module = Unicode(None, allow_none=True, help="""requirejs module from
-        which to load comm target.""")
+    target_name = Unicode("comm")
+    target_module = Unicode(
+        None,
+        allow_none=True,
+        help="""requirejs module from
+        which to load comm target.""",
+    )
 
     topic = Bytes()
 
-    @default('topic')
+    @default("topic")
     def _default_topic(self):
-        return ('comm-%s' % self.comm_id).encode('ascii')
+        return ("comm-%s" % self.comm_id).encode("ascii")
 
     _open_data = Dict(help="data dict, if any, to be included in comm_open")
     _close_data = Dict(help="data dict, if any, to be included in comm_close")
@@ -50,9 +54,11 @@ class BaseComm(LoggingConfigurable):
 
     _closed = Bool(True)
 
-    def __init__(self, target_name='', data=None, metadata=None, buffers=None, **kwargs):
+    def __init__(
+        self, target_name="", data=None, metadata=None, buffers=None, **kwargs
+    ):
         if target_name:
-            kwargs['target_name'] = target_name
+            kwargs["target_name"] = target_name
         super(BaseComm, self).__init__(**kwargs)
 
         if self.primary:
@@ -80,11 +86,14 @@ class BaseComm(LoggingConfigurable):
 
         comm_manager.register_comm(self)
         try:
-            self.publish_msg('comm_open',
-                              data=data, metadata=metadata, buffers=buffers,
-                              target_name=self.target_name,
-                              target_module=self.target_module,
-                              )
+            self.publish_msg(
+                "comm_open",
+                data=data,
+                metadata=metadata,
+                buffers=buffers,
+                target_name=self.target_name,
+                target_module=self.target_module,
+            )
             self._closed = False
         except Exception:
             comm_manager.unregister_comm(self)
@@ -98,8 +107,11 @@ class BaseComm(LoggingConfigurable):
         self._closed = True
         if data is None:
             data = self._close_data
-        self.publish_msg('comm_close',
-            data=data, metadata=metadata, buffers=buffers,
+        self.publish_msg(
+            "comm_close",
+            data=data,
+            metadata=metadata,
+            buffers=buffers,
         )
         if not deleting:
             # If deleting, the comm can't be registered
@@ -107,8 +119,11 @@ class BaseComm(LoggingConfigurable):
 
     def send(self, data=None, metadata=None, buffers=None):
         """Send a message to the frontend-side version of this comm"""
-        self.publish_msg('comm_msg',
-            data=data, metadata=metadata, buffers=buffers,
+        self.publish_msg(
+            "comm_msg",
+            data=data,
+            metadata=metadata,
+            buffers=buffers,
         )
 
     # registering callbacks
@@ -145,10 +160,10 @@ class BaseComm(LoggingConfigurable):
         if self._msg_callback:
             shell = get_ipython()
             if shell:
-                shell.events.trigger('pre_execute')
+                shell.events.trigger("pre_execute")
             self._msg_callback(msg)
             if shell:
-                shell.events.trigger('post_execute')
+                shell.events.trigger("post_execute")
 
 
 class CommManager(LoggingConfigurable):
@@ -211,9 +226,9 @@ class CommManager(LoggingConfigurable):
         """Handler for comm_open messages"""
         from comm import create_comm
 
-        content = msg['content']
-        comm_id = content['comm_id']
-        target_name = content['target_name']
+        content = msg["content"]
+        comm_id = content["comm_id"]
+        target_name = content["target_name"]
         f = self.targets.get(target_name, None)
         comm = create_comm(
             comm_id=comm_id,
@@ -228,19 +243,24 @@ class CommManager(LoggingConfigurable):
                 f(comm, msg)
                 return
             except Exception:
-                self.log.error("Exception opening comm with target: %s", target_name, exc_info=True)
+                self.log.error(
+                    "Exception opening comm with target: %s", target_name, exc_info=True
+                )
 
         # Failure.
         try:
             comm.close()
         except Exception:
-            self.log.error("""Could not close comm during `comm_open` failure
-                clean-up.  The comm may not have been opened yet.""", exc_info=True)
+            self.log.error(
+                """Could not close comm during `comm_open` failure
+                clean-up.  The comm may not have been opened yet.""",
+                exc_info=True,
+            )
 
     def comm_msg(self, stream, ident, msg):
         """Handler for comm_msg messages"""
-        content = msg['content']
-        comm_id = content['comm_id']
+        content = msg["content"]
+        comm_id = content["comm_id"]
         comm = self.get_comm(comm_id)
         if comm is None:
             return
@@ -248,12 +268,12 @@ class CommManager(LoggingConfigurable):
         try:
             comm.handle_msg(msg)
         except Exception:
-            self.log.error('Exception in comm_msg for %s', comm_id, exc_info=True)
+            self.log.error("Exception in comm_msg for %s", comm_id, exc_info=True)
 
     def comm_close(self, stream, ident, msg):
         """Handler for comm_close messages"""
-        content = msg['content']
-        comm_id = content['comm_id']
+        content = msg["content"]
+        comm_id = content["comm_id"]
         comm = self.get_comm(comm_id)
         if comm is None:
             return
@@ -264,7 +284,7 @@ class CommManager(LoggingConfigurable):
         try:
             comm.handle_close(msg)
         except Exception:
-            self.log.error('Exception in comm_close for %s', comm_id, exc_info=True)
+            self.log.error("Exception in comm_close for %s", comm_id, exc_info=True)
 
 
-__all__ = ['CommManager', 'BaseComm']
+__all__ = ["CommManager", "BaseComm"]
