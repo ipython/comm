@@ -10,56 +10,47 @@ import logging
 
 from IPython import get_ipython
 
-from traitlets.config import LoggingConfigurable
 from traitlets.utils.importstring import import_item
-from traitlets import Any, Unicode, Bytes, Bool, Dict, Any, default
 
 from comm import get_comm_manager
 
 
-class BaseComm(LoggingConfigurable):
+class BaseComm:
     """Class for communicating between a Frontend and a Kernel
 
     Must be subclassed with a publish_msg method implementation which
     sends comm messages through the iopub channel.
     """
 
-    comm_id = Unicode()
-
-    @default("comm_id")
-    def _default_comm_id(self):
-        return uuid.uuid4().hex
-
-    primary = Bool(True, help="Am I the primary or secondary Comm?")
-
-    target_name = Unicode("comm")
-    target_module = Unicode(
-        None,
-        allow_none=True,
-        help="""requirejs module from
-        which to load comm target.""",
-    )
-
-    topic = Bytes()
-
-    @default("topic")
-    def _default_topic(self):
-        return ("comm-%s" % self.comm_id).encode("ascii")
-
-    _open_data = Dict(help="data dict, if any, to be included in comm_open")
-    _close_data = Dict(help="data dict, if any, to be included in comm_close")
-
-    _msg_callback = Any()
-    _close_callback = Any()
-
-    _closed = Bool(True)
-
     def __init__(
-        self, target_name="", data=None, metadata=None, buffers=None, **kwargs
+        self,
+        target_name="comm",
+        data=None,
+        metadata=None,
+        buffers=None,
+        comm_id=None,
+        primary=True,
+        target_module=None,
+        topic=None,
+        _open_data=None,
+        _close_data=None,
+        **kwargs,
     ):
-        if target_name:
-            kwargs["target_name"] = target_name
         super(BaseComm, self).__init__(**kwargs)
+
+        self.comm_id = comm_id if comm_id else uuid.uuid4().hex
+        self.primary = primary
+        self.target_name = target_name
+        self.target_module = target_module
+        self.topic = topic if topic else ("comm-%s" % self.comm_id).encode("ascii")
+
+        self._open_data = _open_data if _open_data else {}
+        self._close_data = _close_data if _close_data else {}
+
+        self._msg_callback = None
+        self._close_callback = None
+
+        self._closed = True
 
         if self.primary:
             # I am primary, open my peer.
@@ -166,13 +157,14 @@ class BaseComm(LoggingConfigurable):
                 shell.events.trigger("post_execute")
 
 
-class CommManager(LoggingConfigurable):
+class CommManager:
     """Default CommManager singleton implementation for Comms in the Kernel"""
 
-    comms = Dict()
-    targets = Dict()
-
     # Public APIs
+
+    def __init__(self, **kwargs):
+        self.comms = {}
+        self.targets = {}
 
     def register_target(self, target_name, f):
         """Register a callable f for a given target name
