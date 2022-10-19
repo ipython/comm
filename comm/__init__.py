@@ -7,61 +7,38 @@ This package provides a way to register a Kernel Comm implementation, as per the
 It also provides a base Comm implementation and a default CommManager for the IPython case.
 """
 
+from .base_comm import CommManager
+
 __version__ = "0.1.0"
 __all__ = [
-    "register_comm_classes",
     "create_comm",
-    "create_comm_manager",
     "get_comm_manager",
     "__version__",
 ]
 
-COMM_PROVIDER = None
-
-CommCls = None
-CommManagerCls = None
-
-comm_manager = None
+_comm_manager = None
 
 
-def register_comm_classes(comm_cls, comm_manager_cls):
-    """Register Comm and CommManager classes.
+def _create_comm(*args, **kwargs):
+    """Create a Comm.
 
-    This allows kernels to provide their own Comm and CommManager implementations.
+    This method is intended to be replaced, so that it returns your Comm instance.
     """
-    global CommCls
-    global CommManagerCls
-
-    CommCls = comm_cls
-    CommManagerCls = comm_manager_cls
+    raise NotImplementedError("Cannot ")
 
 
-def create_comm(*args, **kwargs):
-    """Create a comm."""
-    if comm_manager is None:
-        raise RuntimeError(
-            "Cannot create a Comm if no Comm manager is currently registered."
-        )
+def _get_comm_manager():
+    """Get the current Comm manager, creates one if there is none.
 
-    return CommCls(*args, **kwargs)
+    This method is intended to be replaced if needed (if you want to manage multiple CommManagers).
+    """
+    global _comm_manager
 
+    if _comm_manager is None:
+        _comm_manager = CommManager()
 
-def create_comm_manager(*args, **kwargs):
-    """Register the current Comm manager."""
-    if CommManagerCls is None:
-        raise RuntimeError(
-            "Cannot create a CommManager instance if no CommManager class is currently registered."
-        )
-
-    global comm_manager
-
-    comm_manager = CommManagerCls(*args, **kwargs)
-
-    return comm_manager
+    return _comm_manager
 
 
-def get_comm_manager():
-    """Get the current Comm manager, returns None if there is none."""
-    global comm_manager
-
-    return comm_manager
+create_comm = _create_comm
+get_comm_manager = _get_comm_manager

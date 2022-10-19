@@ -5,14 +5,14 @@
 # Distributed under the terms of the Modified BSD License.
 
 import uuid
-
 import logging
 
 from IPython import get_ipython
 
 from traitlets.utils.importstring import import_item
 
-from comm import get_comm_manager
+logger = logging.getLogger('Comm')
+
 
 
 class BaseComm:
@@ -69,6 +69,8 @@ class BaseComm:
 
     def open(self, data=None, metadata=None, buffers=None):
         """Open the frontend-side version of this comm"""
+        from comm import get_comm_manager
+
         if data is None:
             data = self._open_data
         comm_manager = get_comm_manager()
@@ -141,13 +143,13 @@ class BaseComm:
 
     def handle_close(self, msg):
         """Handle a comm_close message"""
-        self.log.debug("handle_close[%s](%s)", self.comm_id, msg)
+        logger.debug("handle_close[%s](%s)", self.comm_id, msg)
         if self._close_callback:
             self._close_callback(msg)
 
     def handle_msg(self, msg):
         """Handle a comm_msg message"""
-        self.log.debug("handle_msg[%s](%s)", self.comm_id, msg)
+        logger.debug("handle_msg[%s](%s)", self.comm_id, msg)
         if self._msg_callback:
             shell = get_ipython()
             if shell:
@@ -162,7 +164,7 @@ class CommManager:
 
     # Public APIs
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.comms = {}
         self.targets = {}
 
@@ -207,10 +209,10 @@ class CommManager:
         try:
             return self.comms[comm_id]
         except KeyError:
-            self.log.warning("No such comm: %s", comm_id)
-            if self.log.isEnabledFor(logging.DEBUG):
+            logger.warning("No such comm: %s", comm_id)
+            if logger.isEnabledFor(logging.DEBUG):
                 # don't create the list of keys if debug messages aren't enabled
-                self.log.debug("Current comms: %s", list(self.comms.keys()))
+                logger.debug("Current comms: %s", list(self.comms.keys()))
 
     # Message handlers
 
@@ -229,13 +231,13 @@ class CommManager:
         )
         self.register_comm(comm)
         if f is None:
-            self.log.error("No such comm target registered: %s", target_name)
+            logger.error("No such comm target registered: %s", target_name)
         else:
             try:
                 f(comm, msg)
                 return
             except Exception:
-                self.log.error(
+                logger.error(
                     "Exception opening comm with target: %s", target_name, exc_info=True
                 )
 
@@ -243,7 +245,7 @@ class CommManager:
         try:
             comm.close()
         except Exception:
-            self.log.error(
+            logger.error(
                 """Could not close comm during `comm_open` failure
                 clean-up.  The comm may not have been opened yet.""",
                 exc_info=True,
@@ -260,7 +262,7 @@ class CommManager:
         try:
             comm.handle_msg(msg)
         except Exception:
-            self.log.error("Exception in comm_msg for %s", comm_id, exc_info=True)
+            logger.error("Exception in comm_msg for %s", comm_id, exc_info=True)
 
     def comm_close(self, stream, ident, msg):
         """Handler for comm_close messages"""
@@ -276,7 +278,7 @@ class CommManager:
         try:
             comm.handle_close(msg)
         except Exception:
-            self.log.error("Exception in comm_close for %s", comm_id, exc_info=True)
+            logger.error("Exception in comm_close for %s", comm_id, exc_info=True)
 
 
 __all__ = ["CommManager", "BaseComm"]
