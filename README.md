@@ -10,41 +10,42 @@ It also provides a base Comm implementation and a default CommManager that can b
 We provide default implementations for usage in IPython:
 
 ```python
-from comm.base_comm import BaseComm, CommManager
-from comm import register_comm_classes
+import comm
 
 
-class MyCustomComm(BaseComm):
+class MyCustomComm(comm.base_comm.BaseComm):
 
     def publish_msg(self, msg_type, data=None, metadata=None, buffers=None, **keys):
         # TODO implement the logic for sending comm messages through the iopub channel
         pass
 
 
-register_comm_classes(MyCustomComm, CommManager)
+comm.create_comm = MyCustomComm
 ```
 
-This is typically what ipykernel and JupyterLite's pyolite will do.
+This is typically what ipykernel and JupyterLite's pyolite kernel will do.
 
-### Case 2: Providing your own comms implementation
-
-You can register your own ``Comm`` and ``CommManager`` class implementations:
+### Case 2: Providing your own comm manager creation implementation
 
 ```python
-from comm import register_comm_classes
+import comm
 
-register_comm_classes(MyCustomComm, MyCustomCommManager)
+comm.create_comm = custom_create_comm
+comm.get_comm_manager = custom_comm_manager_getter
 ```
 
-This is typically what xeus-python does (it has its own implementation using xeus's C++ messaging logic).
+This is typically what xeus-python does (it has its own manager implementation using xeus's C++ messaging logic).
 
 ## Comm users
 
 Libraries like ipywidgets can then use the comms implementation that has been registered by the kernel:
 
 ```python
-from comm import create_comm
+from comm import create_comm, get_comm_manager
 
 # Create a comm
+comm_manager = get_comm_manager()
 comm = create_comm()
+
+comm_manager.register_comm(comm)
 ```
