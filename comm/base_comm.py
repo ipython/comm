@@ -7,8 +7,6 @@
 import uuid
 import logging
 
-from IPython import get_ipython
-
 from traitlets.utils.importstring import import_item
 
 logger = logging.getLogger('Comm')
@@ -151,6 +149,8 @@ class BaseComm:
         """Handle a comm_msg message"""
         logger.debug("handle_msg[%s](%s)", self.comm_id, msg)
         if self._msg_callback:
+            from IPython import get_ipython
+
             shell = get_ipython()
             if shell:
                 shell.events.trigger("pre_execute")
