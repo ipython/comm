@@ -1,3 +1,53 @@
 [build-system]
-requires = ["setuptools>=40.8.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>1.10"]
+build-backend = "hatchling.build"
+
+[project]
+name = "comm"
+dynamic = ["version"]
+description = "Jupyter Python Comm implementation, for usage in ipykernel, xeus-python etc."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.6"
+authors = [
+    { name = "Jupyter contributors" },
+]
+keywords = [
+    "ipykernel",
+    "jupyter",
+    "xeus-python",
+]
+classifiers = [
+    "Framework :: Jupyter",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+    "traitlets>5.3",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+]
+
+[project.urls]
+Homepage = "https://github.com/ipython/comm"
+
+[tool.hatch.version]
+path = "comm/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/comm",
+]
+
+[tool.pytest.ini_options]
+addopts = "-raXs --durations 10 --color=yes"
+filterwarnings = ["error"]
