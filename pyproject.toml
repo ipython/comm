@@ -27,7 +27,7 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/martinRenou/comm"
+Homepage = "https://github.com/ipython/comm"
 
 [tool.hatch.version]
 path = "comm/__init__.py"
