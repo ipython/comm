@@ -92,6 +92,7 @@ class BaseComm:
 
     def close(self, data=None, metadata=None, buffers=None, deleting=False):
         """Close the frontend-side version of this comm"""
+        from comm import get_comm_manager
         if self._closed:
             # only close once
             return
