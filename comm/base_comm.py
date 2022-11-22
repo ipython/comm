@@ -7,13 +7,14 @@
 import uuid
 import logging
 
+from traitlets import HasTraits
 from traitlets.utils.importstring import import_item
 
 logger = logging.getLogger('Comm')
 
 
 
-class BaseComm:
+class BaseComm(HasTraits):
     """Class for communicating between a Frontend and a Kernel
 
     Must be subclassed with a publish_msg method implementation which
@@ -92,7 +93,6 @@ class BaseComm:
 
     def close(self, data=None, metadata=None, buffers=None, deleting=False):
         """Close the frontend-side version of this comm"""
-        from comm import get_comm_manager
         if self._closed:
             # only close once
             return
@@ -107,6 +107,7 @@ class BaseComm:
         )
         if not deleting:
             # If deleting, the comm can't be registered
+            from comm import get_comm_manager
             get_comm_manager().unregister_comm(self)
 
     def send(self, data=None, metadata=None, buffers=None):
@@ -160,14 +161,16 @@ class BaseComm:
                 shell.events.trigger("post_execute")
 
 
-class CommManager:
+class CommManager(HasTraits):
     """Default CommManager singleton implementation for Comms in the Kernel"""
 
     # Public APIs
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.comms = {}
         self.targets = {}
+
+        super(CommManager, self).__init__(*args, **kwargs)
 
     def register_target(self, target_name, f):
         """Register a callable f for a given target name
