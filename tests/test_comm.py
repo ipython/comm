@@ -1,4 +1,5 @@
-from traitlets import HasTraits, Instance, Any
+from traitlets import Any
+from traitlets.config import LoggingConfigurable
 
 from comm.base_comm import CommManager, BaseComm
 
@@ -25,5 +26,5 @@ def test_base_comm():
 
 
 def test_custom_comm_manager():
-    test = CustomCommManager(parent=3)
-    assert test.parent == 3
+    test = CustomCommManager(parent=LoggingConfigurable())
+    assert test.parent is not None

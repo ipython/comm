@@ -7,14 +7,14 @@
 import uuid
 import logging
 
-from traitlets import HasTraits
 from traitlets.utils.importstring import import_item
+from traitlets.config import LoggingConfigurable
 
 logger = logging.getLogger('Comm')
 
 
 
-class BaseComm(HasTraits):
+class BaseComm(LoggingConfigurable):
     """Class for communicating between a Frontend and a Kernel
 
     Must be subclassed with a publish_msg method implementation which
@@ -161,7 +161,7 @@ class BaseComm(HasTraits):
                 shell.events.trigger("post_execute")
 
 
-class CommManager(HasTraits):
+class CommManager(LoggingConfigurable):
     """Default CommManager singleton implementation for Comms in the Kernel"""
 
     # Public APIs
