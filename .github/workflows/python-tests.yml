@@ -30,6 +30,6 @@ jobs:
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
       - name: Install and test
-        run:
+        run: |
           pip install -e .[test]
-          pytest
+          pytest .
