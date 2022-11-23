@@ -6,6 +6,7 @@
 
 import uuid
 import logging
+import comm
 
 from traitlets.utils.importstring import import_item
 
@@ -67,11 +68,10 @@ class BaseComm:
 
     def open(self, data=None, metadata=None, buffers=None):
         """Open the frontend-side version of this comm"""
-        from comm import get_comm_manager
 
         if data is None:
             data = self._open_data
-        comm_manager = get_comm_manager()
+        comm_manager = comm.get_comm_manager()
         if comm_manager is None:
             raise RuntimeError("Comms cannot be opened without a comm_manager.")
 
@@ -92,7 +92,6 @@ class BaseComm:
 
     def close(self, data=None, metadata=None, buffers=None, deleting=False):
         """Close the frontend-side version of this comm"""
-        from comm import get_comm_manager
         if self._closed:
             # only close once
             return
@@ -107,7 +106,7 @@ class BaseComm:
         )
         if not deleting:
             # If deleting, the comm can't be registered
-            get_comm_manager().unregister_comm(self)
+            comm.get_comm_manager().unregister_comm(self)
 
     def send(self, data=None, metadata=None, buffers=None):
         """Send a message to the frontend-side version of this comm"""
