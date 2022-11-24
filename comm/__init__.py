@@ -9,7 +9,7 @@ It also provides a base Comm implementation and a default CommManager for the IP
 
 from .base_comm import CommManager
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = [
     "create_comm",
     "get_comm_manager",
