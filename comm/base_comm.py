@@ -8,6 +8,7 @@ import uuid
 import logging
 import comm
 
+from traitlets.config import LoggingConfigurable
 from traitlets.utils.importstring import import_item
 
 logger = logging.getLogger('Comm')
@@ -159,7 +160,7 @@ class BaseComm:
                 shell.events.trigger("post_execute")
 
 
-class CommManager:
+class CommManager(LoggingConfigurable):
     """Default CommManager singleton implementation for Comms in the Kernel"""
 
     # Public APIs

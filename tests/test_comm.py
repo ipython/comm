@@ -1,4 +1,5 @@
 from comm.base_comm import CommManager, BaseComm
+from traitlets import HasTraits
 
 
 class MyComm(BaseComm):
@@ -9,6 +10,7 @@ class MyComm(BaseComm):
 
 def test_comm_manager():
     test = CommManager()
+    assert isinstance(test, HasTraits)
     assert test.targets == {}
 
 
