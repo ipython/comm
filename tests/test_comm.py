@@ -1,8 +1,7 @@
-from comm.base_comm import CommManager, BaseComm
+from comm.base_comm import BaseComm, CommManager
 
 
 class MyComm(BaseComm):
-
     def publish_msg(self, msg_type, data=None, metadata=None, buffers=None, **keys):
         pass
 

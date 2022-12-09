@@ -4,14 +4,14 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-import uuid
 import logging
-import comm
+import uuid
 
 from traitlets.utils.importstring import import_item
 
-logger = logging.getLogger('Comm')
+import comm
 
+logger = logging.getLogger("Comm")
 
 
 class BaseComm:
@@ -35,7 +35,7 @@ class BaseComm:
         _close_data=None,
         **kwargs,
     ):
-        super(BaseComm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.comm_id = comm_id if comm_id else uuid.uuid4().hex
         self.primary = primary
@@ -66,7 +66,7 @@ class BaseComm:
 
     # publishing messages
 
-    def open(self, data=None, metadata=None, buffers=None):
+    def open(self, data=None, metadata=None, buffers=None):  # noqa
         """Open the frontend-side version of this comm"""
 
         if data is None:
@@ -149,7 +149,7 @@ class BaseComm:
         """Handle a comm_msg message"""
         logger.debug("handle_msg[%s](%s)", self.comm_id, msg)
         if self._msg_callback:
-            from IPython import get_ipython
+            from IPython import get_ipython  # type:ignore
 
             shell = get_ipython()
             if shell:
@@ -237,9 +237,7 @@ class CommManager:
                 f(comm, msg)
                 return
             except Exception:
-                logger.error(
-                    "Exception opening comm with target: %s", target_name, exc_info=True
-                )
+                logger.error("Exception opening comm with target: %s", target_name, exc_info=True)
 
         # Failure.
         try:

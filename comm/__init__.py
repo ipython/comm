@@ -3,7 +3,8 @@
 Copyright (c) IPython Development Team.
 Distributed under the terms of the Modified BSD License.
 
-This package provides a way to register a Kernel Comm implementation, as per the Jupyter kernel protocol.
+This package provides a way to register a Kernel Comm implementation, as per
+the Jupyter kernel protocol.
 It also provides a base Comm implementation and a default CommManager for the IPython case.
 """
 
