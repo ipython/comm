@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>1.10"]
+requires = ["hatchling>=1.10"]
 build-backend = "hatchling.build"
 
 [project]
@@ -22,11 +22,11 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
     "traitlets>=5.3",
@@ -36,6 +36,13 @@ dependencies = [
 test = [
   "pytest",
 ]
+lint = [
+  "black>=22.6.0",
+  "mdformat>0.7",
+  "mdformat-gfm>=0.3.5",
+  "ruff>=0.0.156"
+]
+typing = ["mypy>=0.990"]
 
 [project.urls]
 Homepage = "https://github.com/ipython/comm"
@@ -48,6 +55,74 @@ include = [
     "/comm",
 ]
 
+[tool.hatch.envs.test]
+features = ["test"]
+[tool.hatch.envs.test.scripts]
+test = "python -m pytest -vv {args}"
+nowarn = "test -W default {args}"
+
+[tool.hatch.envs.typing]
+features = ["typing", "test"]
+[tool.hatch.envs.typing.scripts]
+test = "mypy --install-types --non-interactive {args:comm tests}"
+
+[tool.hatch.envs.lint]
+features = ["lint"]
+[tool.hatch.envs.lint.scripts]
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+  "mdformat --check {args:*.md}"
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "mdformat {args:*.md}"
+]
+
 [tool.pytest.ini_options]
 addopts = "-raXs --durations 10 --color=yes"
 filterwarnings = ["error"]
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+no_implicit_reexport = true
+pretty = true
+show_error_context = true
+show_error_codes = true
+strict_equality = true
+strict_optional = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.black]
+line-length = 100
+skip-string-normalization = true
+target-version = ["py37"]
+
+[tool.ruff]
+target-version = "py37"
+line-length = 100
+select = [
+  "A", "B", "C", "E", "F", "FBT", "I", "N", "Q", "RUF", "S", "T",
+  "UP", "W", "YTT",
+]
+ignore = [
+  # FBT002 Boolean default value in function definition
+  "FBT002", "FBT003",
+]
+unfixable = [
+  # Don't touch print statements
+  "T201",
+  # Don't touch noqa lines
+  "RUF100",
+]
+
+[tool.ruff.per-file-ignores]
+# S101 Use of `assert` detected
+"tests/*" = ["S101"]
