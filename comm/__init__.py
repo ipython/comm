@@ -8,7 +8,7 @@ the Jupyter kernel protocol.
 It also provides a base Comm implementation and a default CommManager for the IPython case.
 """
 
-from .base_comm import CommManager
+from .base_comm import BaseComm, CommManager
 
 __version__ = "0.1.2"
 __all__ = [
@@ -20,12 +20,17 @@ __all__ = [
 _comm_manager = None
 
 
+class DummyComm(BaseComm):
+    def publish_msg(self, msg_type, data=None, metadata=None, buffers=None, **keys):
+        pass
+
+
 def _create_comm(*args, **kwargs):
     """Create a Comm.
 
     This method is intended to be replaced, so that it returns your Comm instance.
     """
-    raise NotImplementedError("Cannot ")
+    return DummyComm(*args, **kwargs)
 
 
 def _get_comm_manager():
