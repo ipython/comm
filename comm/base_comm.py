@@ -166,6 +166,7 @@ class CommManager:
 
     def __init__(self):
         self.comms = {}
+        self.closed_comms = {}
         self.targets = {}
 
     def register_target(self, target_name, f):
@@ -255,6 +256,22 @@ class CommManager:
         comm_id = content["comm_id"]
         comm = self.get_comm(comm_id)
         if comm is None:
+            if comm_id in self.closed_comms:
+                # We receive communication to a closed comm
+                try:
+                    closed_comm = self.closed_comms[comm_id]
+                    closed_comm.publish_msg(
+                        "comm_close",
+                        data={},
+                        metadata=None,
+                        buffers=None,
+                    )
+                except Exception:
+                    logger.error(
+                        """Could not send comm_close for a closed comm to reply
+                        for incoming communication""",
+                        exc_info=True,
+                    )
             return
 
         try:
@@ -271,6 +288,7 @@ class CommManager:
             return
 
         self.comms[comm_id]._closed = True
+        self.closed_comms[comm_id] = comm
         del self.comms[comm_id]
 
         try:
