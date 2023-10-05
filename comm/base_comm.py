@@ -166,7 +166,6 @@ class CommManager:
 
     def __init__(self):
         self.comms = {}
-        self.closed_comms = {}
         self.targets = {}
 
     def register_target(self, target_name, f):
