@@ -286,7 +286,6 @@ class CommManager:
             return
 
         self.comms[comm_id]._closed = True
-        self.closed_comms[comm_id] = comm
         del self.comms[comm_id]
 
         try:
