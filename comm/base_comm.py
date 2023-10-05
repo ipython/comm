@@ -256,22 +256,20 @@ class CommManager:
         comm_id = content["comm_id"]
         comm = self.get_comm(comm_id)
         if comm is None:
-            if comm_id in self.closed_comms:
-                # We receive communication to a closed comm
-                try:
-                    closed_comm = self.closed_comms[comm_id]
-                    closed_comm.publish_msg(
-                        "comm_close",
-                        data={},
-                        metadata=None,
-                        buffers=None,
-                    )
-                except Exception:
-                    logger.error(
-                        """Could not send comm_close for a closed comm to reply
-                        for incoming communication""",
-                        exc_info=True,
-                    )
+            try:
+                from comm import create_comm
+                closed_comm = create_comm(
+                    comm_id=comm_id,
+                    primary=False,
+                    target_name=None,
+                )
+                closed_comm.close()
+            except Exception:
+                logger.error(
+                    """Could not send comm_close for a closed comm to reply
+                    for incoming communication""",
+                    exc_info=True,
+                )
             return
 
         try:
