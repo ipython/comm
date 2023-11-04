@@ -86,12 +86,10 @@ line-length = 100
 
 [tool.ruff.lint]
 select = [
-  "A", "B", "C", "E", "F", "FBT", "I", "N", "Q", "RUF", "S", "T",
+  "A", "B", "C", "E", "F", "I", "N", "Q", "RUF", "S", "T",
   "UP", "W", "YTT",
 ]
 ignore = [
-  # FBT002 Boolean default value in function definition
-  "FBT002", "FBT003",
 ]
 unfixable = [
   # Don't touch print statements

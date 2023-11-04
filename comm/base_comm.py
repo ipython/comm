@@ -84,7 +84,7 @@ class BaseComm:
 
     # publishing messages
 
-    def open(
+    def open(  # noqa: A003
         self, data: MaybeDict = None, metadata: MaybeDict = None, buffers: BuffersType = None
     ) -> None:
         """Open the frontend-side version of this comm"""
