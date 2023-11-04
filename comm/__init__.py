@@ -8,8 +8,10 @@ the Jupyter kernel protocol.
 It also provides a base Comm implementation and a default CommManager for the IPython case.
 """
 from __future__ import annotations
+
 from typing import Any
-from .base_comm import BaseComm, CommManager, MaybeDict, BuffersType
+
+from .base_comm import BaseComm, BuffersType, CommManager, MaybeDict
 
 __version__ = "0.1.4"
 __all__ = [
@@ -22,7 +24,14 @@ _comm_manager = None
 
 
 class DummyComm(BaseComm):
-    def publish_msg(self, msg_type: str, data:MaybeDict=None, metadata:MaybeDict=None, buffers:BuffersType=None, **keys: Any) ->None:
+    def publish_msg(
+        self,
+        msg_type: str,
+        data: MaybeDict = None,
+        metadata: MaybeDict = None,
+        buffers: BuffersType = None,
+        **keys: Any,
+    ) -> None:
         pass
 
 

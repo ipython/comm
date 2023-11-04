@@ -1,9 +1,17 @@
 from typing import Any
+
 from comm.base_comm import BaseComm, CommManager
 
 
 class MyComm(BaseComm):
-    def publish_msg(self, msg_type:str, data:Any=None, metadata:Any=None, buffers:Any=None, **keys:Any) ->None:
+    def publish_msg(
+        self,
+        msg_type: str,
+        data: Any = None,
+        metadata: Any = None,
+        buffers: Any = None,
+        **keys: Any,
+    ) -> None:
         pass
 
 

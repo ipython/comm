@@ -4,9 +4,10 @@
 # Copyright (c) IPython Development Team.
 # Distributed under the terms of the Modified BSD License.
 from __future__ import annotations
+
 import logging
-import uuid
 import typing as t
+import uuid
 
 from traitlets.utils.importstring import import_item
 
@@ -23,6 +24,7 @@ BuffersType = t.Optional[t.List[bytes]]
 CommCallback = t.Callable[[MessageType], None]
 CommTargetCallback = t.Callable[["BaseComm", MessageType], None]
 
+
 class BaseComm:
     """Class for communicating between a Frontend and a Kernel
 
@@ -32,16 +34,16 @@ class BaseComm:
 
     def __init__(
         self,
-        target_name:str="comm",
-        data: MaybeDict=None,
-        metadata: MaybeDict=None,
-        buffers: BuffersType=None,
-        comm_id: str | None=None,
-        primary:bool=True,
-        target_module: str|None=None,
-        topic:bytes|None=None,
-        _open_data: MaybeDict=None,
-        _close_data: MaybeDict=None,
+        target_name: str = "comm",
+        data: MaybeDict = None,
+        metadata: MaybeDict = None,
+        buffers: BuffersType = None,
+        comm_id: str | None = None,
+        primary: bool = True,
+        target_module: str | None = None,
+        topic: bytes | None = None,
+        _open_data: MaybeDict = None,
+        _close_data: MaybeDict = None,
         **kwargs: t.Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -55,8 +57,8 @@ class BaseComm:
         self._open_data = _open_data if _open_data else {}
         self._close_data = _close_data if _close_data else {}
 
-        self._msg_callback: CommCallback|None = None
-        self._close_callback: CommCallback|None = None
+        self._msg_callback: CommCallback | None = None
+        self._close_callback: CommCallback | None = None
 
         self._closed = True
 
@@ -66,7 +68,14 @@ class BaseComm:
         else:
             self._closed = False
 
-    def publish_msg(self, msg_type:str, data:MaybeDict=None, metadata:MaybeDict=None, buffers:BuffersType=None, **keys:t.Any) -> None:
+    def publish_msg(
+        self,
+        msg_type: str,
+        data: MaybeDict = None,
+        metadata: MaybeDict = None,
+        buffers: BuffersType = None,
+        **keys: t.Any,
+    ) -> None:
         raise NotImplementedError("publish_msg Comm method is not implemented")
 
     def __del__(self) -> None:
@@ -75,7 +84,9 @@ class BaseComm:
 
     # publishing messages
 
-    def open(self, data:MaybeDict=None, metadata:MaybeDict=None, buffers:BuffersType=None)->None:
+    def open(
+        self, data: MaybeDict = None, metadata: MaybeDict = None, buffers: BuffersType = None
+    ) -> None:
         """Open the frontend-side version of this comm"""
 
         if data is None:
@@ -99,7 +110,13 @@ class BaseComm:
             comm_manager.unregister_comm(self)
             raise
 
-    def close(self, data:MaybeDict=None, metadata:MaybeDict=None, buffers:BuffersType=None, deleting:bool=False)->None:
+    def close(
+        self,
+        data: MaybeDict = None,
+        metadata: MaybeDict = None,
+        buffers: BuffersType = None,
+        deleting: bool = False,
+    ) -> None:
         """Close the frontend-side version of this comm"""
         if self._closed:
             # only close once
@@ -117,7 +134,9 @@ class BaseComm:
             # If deleting, the comm can't be registered
             comm.get_comm_manager().unregister_comm(self)
 
-    def send(self, data:MaybeDict=None, metadata:MaybeDict=None, buffers:BuffersType=None)->None:
+    def send(
+        self, data: MaybeDict = None, metadata: MaybeDict = None, buffers: BuffersType = None
+    ) -> None:
         """Send a message to the frontend-side version of this comm"""
         self.publish_msg(
             "comm_msg",
@@ -128,7 +147,7 @@ class BaseComm:
 
     # registering callbacks
 
-    def on_close(self, callback:CommCallback|None) -> None:
+    def on_close(self, callback: CommCallback | None) -> None:
         """Register a callback for comm_close
 
         Will be called with the `data` of the close message.
@@ -137,7 +156,7 @@ class BaseComm:
         """
         self._close_callback = callback
 
-    def on_msg(self, callback: CommCallback|None) ->None:
+    def on_msg(self, callback: CommCallback | None) -> None:
         """Register a callback for comm_msg
 
         Will be called with the `data` of any comm_msg messages.
@@ -148,13 +167,13 @@ class BaseComm:
 
     # handling of incoming messages
 
-    def handle_close(self, msg:MessageType)->None:
+    def handle_close(self, msg: MessageType) -> None:
         """Handle a comm_close message"""
         logger.debug("handle_close[%s](%s)", self.comm_id, msg)
         if self._close_callback:
             self._close_callback(msg)
 
-    def handle_msg(self, msg:MessageType)->None:
+    def handle_msg(self, msg: MessageType) -> None:
         """Handle a comm_msg message"""
         logger.debug("handle_msg[%s](%s)", self.comm_id, msg)
         if self._msg_callback:
@@ -177,7 +196,7 @@ class CommManager:
         self.comms: dict[str, BaseComm] = {}
         self.targets: dict[str, CommTargetCallback] = {}
 
-    def register_target(self, target_name:str, f:CommTargetCallback | str)->None:
+    def register_target(self, target_name: str, f: CommTargetCallback | str) -> None:
         """Register a callable f for a given target name
 
         f will be called with two arguments when a comm_open message is received with `target`:
@@ -192,7 +211,7 @@ class CommManager:
 
         self.targets[target_name] = t.cast(CommTargetCallback, f)
 
-    def unregister_target(self, target_name:str, f:CommTargetCallback) ->CommTargetCallback:
+    def unregister_target(self, target_name: str, f: CommTargetCallback) -> CommTargetCallback:
         """Unregister a callable registered with register_target"""
         return self.targets.pop(target_name)
 
@@ -202,12 +221,12 @@ class CommManager:
         self.comms[comm_id] = comm
         return comm_id
 
-    def unregister_comm(self, comm:BaseComm) -> None:
+    def unregister_comm(self, comm: BaseComm) -> None:
         """Unregister a comm, and close its counterpart"""
         # unlike get_comm, this should raise a KeyError
         comm = self.comms.pop(comm.comm_id)
 
-    def get_comm(self, comm_id:str) -> BaseComm | None:
+    def get_comm(self, comm_id: str) -> BaseComm | None:
         """Get a comm with a particular id
 
         Returns the comm if found, otherwise None.
@@ -226,7 +245,7 @@ class CommManager:
 
     # Message handlers
 
-    def comm_open(self, stream:ZMQStream, ident: str, msg:MessageType)->None:
+    def comm_open(self, stream: ZMQStream, ident: str, msg: MessageType) -> None:
         """Handler for comm_open messages"""
         from comm import create_comm
 
@@ -259,7 +278,7 @@ class CommManager:
                 exc_info=True,
             )
 
-    def comm_msg(self, stream:ZMQStream, ident:str, msg:MessageType)->None:
+    def comm_msg(self, stream: ZMQStream, ident: str, msg: MessageType) -> None:
         """Handler for comm_msg messages"""
         content = msg["content"]
         comm_id = content["comm_id"]
@@ -272,7 +291,7 @@ class CommManager:
         except Exception:
             logger.error("Exception in comm_msg for %s", comm_id, exc_info=True)
 
-    def comm_close(self, stream:ZMQStream, ident:str, msg:MessageType)->None:
+    def comm_close(self, stream: ZMQStream, ident: str, msg: MessageType) -> None:
         """Handler for comm_close messages"""
         content = msg["content"]
         comm_id = content["comm_id"]
