@@ -286,6 +286,7 @@ class CommManager:
         if comm is None:
             try:
                 from comm import create_comm
+
                 closed_comm = create_comm(
                     comm_id=comm_id,
                     primary=False,
