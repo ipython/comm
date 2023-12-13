@@ -48,7 +48,7 @@ def _get_comm_manager() -> CommManager:
 
     This method is intended to be replaced if needed (if you want to manage multiple CommManagers).
     """
-    global _comm_manager
+    global _comm_manager  # noqa: PLW0603
 
     if _comm_manager is None:
         _comm_manager = CommManager()
