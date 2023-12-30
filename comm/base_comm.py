@@ -81,7 +81,12 @@ class BaseComm:
 
     def __del__(self) -> None:
         """trigger close on gc"""
-        self.close(deleting=True)
+        try:
+            self.close(deleting=True)
+        except Exception:
+            # any number of things can have gone horribly wrong if we're called during
+            # interpreter teardown, which happens if someone holds onto a comm at module scope
+            pass
 
     # publishing messages
 
