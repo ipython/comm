@@ -5,6 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 from __future__ import annotations
 
+import contextlib
 import logging
 import typing as t
 import uuid
@@ -81,12 +82,10 @@ class BaseComm:
 
     def __del__(self) -> None:
         """trigger close on gc"""
-        try:
+        with contextlib.suppress(Exception):
+            # any number of things can have gone horribly wrong
+            # when called during interpreter teardown
             self.close(deleting=True)
-        except Exception:
-            # any number of things can have gone horribly wrong if we're called during
-            # interpreter teardown, which happens if someone holds onto a comm at module scope
-            pass
 
     # publishing messages
 
