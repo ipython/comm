@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.2
+
+([Full Changelog](https://github.com/ipython/comm/compare/v0.2.1...76149e7ee0f331772c964ae86cdb8bafebe6dfa2))
+
+### Maintenance and upkeep improvements
+
+- Update Release Scripts [#27](https://github.com/ipython/comm/pull/27) ([@blink1073](https://github.com/blink1073))
+
+### Other merged PRs
+
+- chore: update pre-commit hooks [#26](https://github.com/ipython/comm/pull/26) ([@pre-commit-ci](https://github.com/pre-commit-ci))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/ipython/comm/graphs/contributors?from=2024-01-02&to=2024-03-12&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Aipython%2Fcomm+involves%3Ablink1073+updated%3A2024-01-02..2024-03-12&type=Issues) | [@pre-commit-ci](https://github.com/search?q=repo%3Aipython%2Fcomm+involves%3Apre-commit-ci+updated%3A2024-01-02..2024-03-12&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.1
 
 ([Full Changelog](https://github.com/ipython/comm/compare/v0.2.0...46e07dc298d19c1b7ade765d0a435f794e69a020))
@@ -24,8 +44,6 @@ All notable changes to this project will be documented in this file.
 ([GitHub contributors page for this release](https://github.com/ipython/comm/graphs/contributors?from=2023-11-06&to=2024-01-02&type=c))
 
 [@apmorton](https://github.com/search?q=repo%3Aipython%2Fcomm+involves%3Aapmorton+updated%3A2023-11-06..2024-01-02&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Aipython%2Fcomm+involves%3Ablink1073+updated%3A2023-11-06..2024-01-02&type=Issues) | [@pre-commit-ci](https://github.com/search?q=repo%3Aipython%2Fcomm+involves%3Apre-commit-ci+updated%3A2023-11-06..2024-01-02&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.0
 
