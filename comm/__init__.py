@@ -7,6 +7,7 @@ This package provides a way to register a Kernel Comm implementation, as per
 the Jupyter kernel protocol.
 It also provides a base Comm implementation and a default CommManager for the IPython case.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -15,9 +16,9 @@ from .base_comm import BaseComm, BuffersType, CommManager, MaybeDict
 
 __version__ = "0.2.2"
 __all__ = [
+    "__version__",
     "create_comm",
     "get_comm_manager",
-    "__version__",
 ]
 
 _comm_manager = None
