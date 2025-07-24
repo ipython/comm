@@ -218,7 +218,7 @@ class CommManager:
                 try:
                     f = getattr(module, obj)
                 except AttributeError as e:
-                    raise ImportError("No module named %s" % obj) from e
+                    raise ImportError(f"No module named {obj}") from e
             else:
                 # called with un-dotted string
                 f = __import__(parts[0])
