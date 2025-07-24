@@ -9,8 +9,6 @@ import logging
 import typing as t
 import uuid
 
-from traitlets.utils.importstring import import_item
-
 import comm
 
 if t.TYPE_CHECKING:
@@ -212,7 +210,18 @@ class CommManager:
         f can be a Python callable or an import string for one.
         """
         if isinstance(f, str):
-            f = import_item(f)
+            parts = f.rsplit(".", 1)
+            if len(parts) == 2:
+                # called with 'foo.bar....'
+                package, obj = parts
+                module = __import__(package, fromlist=[obj])
+                try:
+                    f = getattr(module, obj)
+                except AttributeError as e:
+                    raise ImportError("No module named %s" % obj) from e
+            else:
+                # called with un-dotted string
+                f = __import__(parts[0])
 
         self.targets[target_name] = t.cast(CommTargetCallback, f)
 

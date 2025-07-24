@@ -23,9 +23,6 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-dependencies = [
-    "traitlets>=4",
-]
 
 [project.optional-dependencies]
 test = [
