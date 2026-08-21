@@ -16,9 +16,9 @@ if t.TYPE_CHECKING:
 
 logger = logging.getLogger("Comm")
 
-MessageType = t.Dict[str, t.Any]
-MaybeDict = t.Optional[t.Dict[str, t.Any]]
-BuffersType = t.Optional[t.List[bytes]]
+MessageType = dict[str, t.Any]
+MaybeDict = dict[str, t.Any] | None
+BuffersType = list[bytes] | None
 CommCallback = t.Callable[[MessageType], None]
 CommTargetCallback = t.Callable[["BaseComm", MessageType], None]
 
@@ -209,6 +209,7 @@ class CommManager:
 
         f can be a Python callable or an import string for one.
         """
+        func: t.Any = f
         if isinstance(f, str):
             parts = f.rsplit(".", 1)
             if len(parts) == 2:
@@ -216,15 +217,15 @@ class CommManager:
                 package, obj = parts
                 module = __import__(package, fromlist=[obj])
                 try:
-                    f = getattr(module, obj)
+                    func = getattr(module, obj)
                 except AttributeError as e:
                     error_msg = f"No module named {obj}"
                     raise ImportError(error_msg) from e
             else:
                 # called with un-dotted string
-                f = __import__(parts[0])
+                func = __import__(parts[0])
 
-        self.targets[target_name] = t.cast(CommTargetCallback, f)
+        self.targets[target_name] = t.cast(CommTargetCallback, func)
 
     def unregister_target(self, target_name: str, f: CommTargetCallback) -> CommTargetCallback:  # noqa: ARG002
         """Unregister a callable registered with register_target"""
